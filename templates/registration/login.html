@@ -1,0 +1,431 @@
+{% extends "layout.html" %}
+{% block title %}Login - Bloggies{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-60">
+        <div class="col-lg-8 col-md-10">
+            <!-- Main Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left Side - Branding/Image -->
+                    <div class="col-lg-5 d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="h-100 p-5 d-flex flex-column justify-content-center text-white">
+                            <div class="mb-4">
+                                <div class="bg-white bg-opacity-20 rounded-circle p-3 d-inline-block">
+                                    <i class="fas fa-pen-nib fa-3x"></i>
+                                </div>
+                            </div>
+                            <h2 class="display-6 fw-bold mb-3">Welcome Back!</h2>
+                            <p class="lead opacity-75 mb-4">
+                                Log in to continue your blogging journey. Share your stories and connect with your audience.
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Access your dashboard</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Manage your posts</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Engage with readers</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-top border-white border-opacity-25">
+                                <small class="opacity-75">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Secure & encrypted login
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Login Form -->
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <!-- Header -->
+                            <div class="text-center mb-4">
+                                <h3 class="fw-bold mb-2">Sign In</h3>
+                                <p class="text-muted">Welcome back! Please enter your credentials</p>
+                            </div>
+
+                            <!-- Social Login Buttons -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill" 
+                                        style="border-color: #db4437; color: #db4437;">
+                                    <i class="fab fa-google me-2"></i>
+                                    Continue with Google
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill" 
+                                        style="border-color: #1877f2; color: #1877f2;">
+                                    <i class="fab fa-facebook-f me-2"></i>
+                                    Continue with Facebook
+                                </button>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="position-relative text-center my-4">
+                                <hr>
+                                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+                                    OR
+                                </span>
+                            </div>
+
+                            <!-- Login Form -->
+                            <form method="post" novalidate>
+                                {% csrf_token %}
+                                
+                                <!-- Username/Email -->
+                                <div class="mb-4">
+                                    <div class="form-floating">
+                                        <input type="text" 
+                                               class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                                               id="id_username" 
+                                               name="username" 
+                                               placeholder="Enter your username or email"
+                                               value="{{ form.username.value|default:'' }}"
+                                               required>
+                                        <label for="id_username">
+                                            <i class="fas fa-user text-primary me-2"></i>Username or Email
+                                        </label>
+                                        {% if form.username.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.username.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="mb-3">
+                                    <div class="form-floating">
+                                        <input type="password" 
+                                               class="form-control form-control-lg {% if form.password.errors %}is-invalid{% endif %}" 
+                                               id="id_password" 
+                                               name="password" 
+                                               placeholder="Enter your password"
+                                               required>
+                                        <label for="id_password">
+                                            <i class="fas fa-lock text-primary me-2"></i>Password
+                                        </label>
+                                        {% if form.password.errors %}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Remember Me & Forgot Password -->
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="id_remember" name="remember">
+                                        <label class="form-check-label" for="id_remember">
+                                            Remember Me
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <a href="#" class="text-decoration-none small">
+                                            <i class="fas fa-key me-1"></i>Forgot Password?
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-sign-in-alt me-2"></i>
+                                        Sign In
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Signup Link -->
+                            <div class="text-center mt-4">
+                                <p class="text-muted">
+                                    Don't have an account? 
+                                    <a href="{% url 'register' %}" class="text-decoration-none fw-bold text-primary">
+                                        Create One Now
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-edit fa-2x text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Write & Publish</h6>
+                            <p class="text-muted small mb-0">
+                                Create and share your stories instantly
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-chart-line fa-2x text-success"></i>
+                            </div>
+                            <h6 class="fw-bold">Track Analytics</h6>
+                            <p class="text-muted small mb-0">
+                                Monitor your post performance
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-comments fa-2x text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold">Engage</h6>
+                            <p class="text-muted small mb-0">
+                                Connect with your readers
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Login Enhancements -->
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const passwordField = document.getElementById('id_password');
+        if (passwordField) {
+            // Create toggle button
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'btn btn-link position-absolute end-0 top-0 mt-3 me-2 text-muted';
+            toggleBtn.style.zIndex = '10';
+            toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            
+            const parent = passwordField.closest('.form-floating');
+            if (parent) {
+                parent.style.position = 'relative';
+                parent.appendChild(toggleBtn);
+                
+                toggleBtn.addEventListener('click', function() {
+                    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordField.setAttribute('type', type);
+                    this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+                });
+            }
+        }
+
+        // Auto-focus on username field
+        const usernameField = document.getElementById('id_username');
+        if (usernameField) {
+            usernameField.focus();
+        }
+
+        // Form validation for empty fields
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const username = document.getElementById('id_username');
+                const password = document.getElementById('id_password');
+                
+                if (!username.value.trim() || !password.value.trim()) {
+                    e.preventDefault();
+                    alert('Please fill in all fields.');
+                }
+            });
+        }
+
+        // Show error messages with animation
+        const errorMessages = document.querySelectorAll('.invalid-feedback');
+        errorMessages.forEach(function(error) {
+            if (error.textContent.trim()) {
+                error.style.display = 'block';
+                error.parentElement.querySelector('.form-control').classList.add('is-invalid');
+            }
+        });
+    });
+</script>
+
+<style>
+    .min-vh-60 {
+        min-height: 60vh;
+    }
+    
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    
+    .form-floating {
+        margin-bottom: 0;
+    }
+    
+    .form-floating > .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+    
+    .form-floating > .form-control:focus {
+        border-color: #6C63FF;
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.15);
+    }
+    
+    .form-floating > .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+    
+    .form-floating > .form-control.is-valid {
+        border-color: #28a745;
+    }
+    
+    .form-floating > .form-control-lg {
+        padding: 1.2rem 1rem 0.5rem;
+    }
+    
+    .form-floating > label {
+        padding: 0.8rem 1rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        padding-top: 0.3rem;
+        padding-bottom: 0.1rem;
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-check-input:checked {
+        background-color: #6C63FF;
+        border-color: #6C63FF;
+    }
+    
+    .bg-opacity-20 {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    /* Toast notifications if any */
+    .toast-container {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+    /* Custom checkbox styling */
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin-top: 2px;
+    }
+    
+    .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
+        border-color: #6C63FF;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .p-5 {
+            padding: 1.5rem !important;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            font-size: 0.9rem !important;
+            padding: 0.6rem 1.5rem !important;
+        }
+        
+        .d-flex.justify-content-between {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .form-floating > .form-control-lg {
+            font-size: 1rem;
+        }
+    }
+    
+    /* Loading spinner animation */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Smooth transitions */
+    .card {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    /* Eye icon positioning */
+    .btn-link {
+        text-decoration: none;
+        padding: 0.5rem;
+        z-index: 10;
+    }
+    
+    .btn-link:hover {
+        color: #6C63FF !important;
+    }
+    
+    .btn-link:focus {
+        box-shadow: none;
+    }
+</style>
+{% endblock %}
+{% endblock %}
+{% comment %} {%extends "layout.html"%}
+{%block title%}Login - Bloggies{%endblock%}
+{%block content%}
+<h1>Welcome To Blog App Login Page</h1>
+{%endblock%} {% endcomment %}

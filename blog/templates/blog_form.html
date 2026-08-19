@@ -1,0 +1,708 @@
+{% extends "layout.html" %}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} - Bloggies{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h2 class="display-6 fw-bold mb-1">
+                        <i class="fas fa-pen-fancy text-primary me-2"></i>
+                        {% if form.instance.pk %}Edit Post{% else %}Create New Post{% endif %}
+                    </h2>
+                    <p class="text-muted">
+                        {% if form.instance.pk %}
+                        Update your existing blog post
+                        {% else %}
+                        Share your story with the world
+                        {% endif %}
+                    </p>
+                </div>
+                <div>
+                    <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Posts
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <!-- Form Header -->
+                <div class="card-header bg-gradient-primary text-white py-4 px-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-white bg-opacity-25 rounded-circle p-3">
+                            <i class="fas fa-{% if form.instance.pk %}edit{% else %}plus-circle{% endif %} fa-2x"></i>
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold">
+                                {% if form.instance.pk %}Edit Your Story{% else %}Write a New Story{% endif %}
+                            </h4>
+                            <small class="opacity-75">
+                                {% if form.instance.pk %}Make your post even better{% else %}Let your creativity flow{% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Body -->
+                <div class="card-body p-5">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Progress Bar -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Completion Progress</span>
+                                <span class="text-muted small" id="progressText">0%</span>
+                            </div>
+                            <div class="progress" style="height: 6px; border-radius: 50px;">
+                                <div class="progress-bar bg-gradient-primary" 
+                                     style="width: 0%; background: linear-gradient(90deg, #667eea, #764ba2);" 
+                                     id="progressBar">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Fields -->
+                        <div class="row g-4">
+                            <!-- Title Field -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control form-control-lg {% if form.title.errors %}is-invalid{% endif %}" 
+                                           id="id_title" 
+                                           name="title" 
+                                           placeholder="Enter your post title"
+                                           value="{{ form.title.value|default:'' }}"
+                                           required>
+                                    <label for="id_title">
+                                        <i class="fas fa-heading text-primary me-2"></i>Post Title
+                                    </label>
+                                    {% if form.title.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.title.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Make it catchy and descriptive (max 200 characters)
+                                </div>
+                            </div>
+
+                            <!-- Slug Field (Auto-generated) -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" 
+                                           class="form-control {% if form.slug.errors %}is-invalid{% endif %}" 
+                                           id="id_slug" 
+                                           name="slug" 
+                                           placeholder="post-url-slug"
+                                           value="{{ form.slug.value|default:'' }}">
+                                    <label for="id_slug">
+                                        <i class="fas fa-link text-primary me-2"></i>Slug (URL)
+                                    </label>
+                                    {% if form.slug.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.slug.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Leave blank to auto-generate from title
+                                </div>
+                            </div>
+
+                            <!-- Content Field -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control form-control-lg {% if form.content.errors %}is-invalid{% endif %}" 
+                                              id="id_content" 
+                                              name="content" 
+                                              placeholder="Write your amazing content here..."
+                                              style="min-height: 250px; resize: vertical;"
+                                              required>{{ form.content.value|default:'' }}</textarea>
+                                    <label for="id_content">
+                                        <i class="fas fa-align-left text-primary me-2"></i>Content
+                                    </label>
+                                    {% if form.content.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.content.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    <span id="charCount">0</span> characters | 
+                                    <span id="wordCount">0</span> words
+                                </div>
+                            </div>
+
+                            <!-- Excerpt Field -->
+                            <div class="col-12 col-md-6">
+                                <div class="form-floating">
+                                    <textarea class="form-control {% if form.excerpt.errors %}is-invalid{% endif %}" 
+                                              id="id_excerpt" 
+                                              name="excerpt" 
+                                              placeholder="Brief summary of your post..."
+                                              style="min-height: 100px; resize: vertical;">{{ form.excerpt.value|default:'' }}</textarea>
+                                    <label for="id_excerpt">
+                                        <i class="fas fa-quote-right text-primary me-2"></i>Excerpt (Summary)
+                                    </label>
+                                    {% if form.excerpt.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.excerpt.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Short description for preview (max 500 characters)
+                                </div>
+                            </div>
+
+                            <!-- Status Field -->
+                            <div class="col-12 col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select {% if form.status.errors %}is-invalid{% endif %}" 
+                                            id="id_status" 
+                                            name="status"
+                                            aria-label="Post status">
+                                        <option value="public" {% if form.status.value == 'Public' %}selected{% endif %}>
+                                            <i class="fas fa-pencil-alt"></i> Public
+                                        </option>
+                                        <option value="private" {% if form.status.value == 'private' %}selected{% endif %}>
+                                            <i class="fas fa-globe"></i> Private
+                                        </option>
+                                    </select>
+                                    <label for="id_status">
+                                        <i class="fas fa-flag text-primary me-2"></i>Status
+                                    </label>
+                                    {% if form.status.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <!-- Image Upload -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="file" 
+                                           class="form-control {% if form.image.errors %}is-invalid{% endif %}" 
+                                           id="id_image" 
+                                           name="image"
+                                           accept="image/*">
+                                    <label for="id_image">
+                                        <i class="fas fa-image text-primary me-2"></i>Featured Image
+                                    </label>
+                                    {% if form.image.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.image.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <!-- Image Preview -->
+                                <div id="imagePreview" class="mt-3" style="display: none;">
+                                    <div class="position-relative d-inline-block">
+                                        <img id="previewImage" src="#" alt="Preview" 
+                                             style="max-height: 200px; border-radius: 10px; border: 2px solid #e9ecef;">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle" 
+                                                onclick="removeImage()" 
+                                                style="width: 30px; height: 30px; padding: 0;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                {% if form.instance.image %}
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                        Current image: {{ form.instance.image.name }}
+                                    </small>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Categories & Tags -->
+                            <div class="col-12 col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select {% if form.categories.errors %}is-invalid{% endif %}" 
+                                            id="id_categories" 
+                                            name="categories" 
+                                            multiple
+                                            style="min-height: 100px;">
+                                        <!-- Categories will be populated by Django -->
+                                        {% for category in form.categories.field.queryset %}
+                                            <option value="{{ category.pk }}" 
+                                                    {% if category.pk in form.categories.value %}selected{% endif %}>
+                                                {{ category.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="id_categories">
+                                        <i class="fas fa-folder text-primary me-2"></i>Categories
+                                    </label>
+                                    {% if form.categories.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.categories.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Hold Ctrl/Cmd to select multiple
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select {% if form.tags.errors %}is-invalid{% endif %}" 
+                                            id="id_tags" 
+                                            name="tags" 
+                                            multiple
+                                            style="min-height: 100px;">
+                                        <!-- Tags will be populated by Django -->
+                                        {% for tag in form.tags.field.queryset %}
+                                            <option value="{{ tag.pk }}" 
+                                                    {% if tag.pk in form.tags.value %}selected{% endif %}>
+                                                {{ tag.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <label for="id_tags">
+                                        <i class="fas fa-tags text-primary me-2"></i>Tags
+                                    </label>
+                                    {% if form.tags.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.tags.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Hold Ctrl/Cmd to select multiple
+                                </div>
+                            </div>
+
+                            <!-- Featured Checkbox -->
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" 
+                                           type="checkbox" 
+                                           id="id_featured" 
+                                           name="featured"
+                                           {% if form.featured.value %}checked{% endif %}
+                                           style="width: 50px; height: 25px;">
+                                    <label class="form-check-label fw-medium" for="id_featured">
+                                        <i class="fas fa-star text-warning me-2"></i>
+                                        Feature this post
+                                    </label>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Featured posts appear prominently on the homepage
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Meta Description -->
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control {% if form.meta_description.errors %}is-invalid{% endif %}" 
+                                              id="id_meta_description" 
+                                              name="meta_description" 
+                                              placeholder="SEO meta description..."
+                                              style="min-height: 80px; resize: vertical;">{{ form.meta_description.value|default:'' }}</textarea>
+                                    <label for="id_meta_description">
+                                        <i class="fas fa-meta text-primary me-2"></i>Meta Description (SEO)
+                                    </label>
+                                    {% if form.meta_description.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.meta_description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="form-text">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    <span id="metaCharCount">0</span>/160 characters
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="mt-5 pt-3 border-top">
+                            <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5">
+                                        <i class="fas fa-save me-2"></i>
+                                        {% if form.instance.pk %}Update Post{% else %}Publish Post{% endif %}
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary btn-lg rounded-pill px-4">
+                                        <i class="fas fa-undo me-2"></i>Reset
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success btn-lg rounded-pill px-4" onclick="previewPost()">
+                                        <i class="fas fa-eye me-2"></i>Preview
+                                    </button>
+                                </div>
+                                <div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>
+                                        Last saved: <span id="lastSaved">Never</span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-lightbulb fa-2x text-primary"></i>
+                            </div>
+                            <h5 class="fw-bold">Writing Tips</h5>
+                            <p class="text-muted small">
+                                Write clearly, use headings, and break up long paragraphs for better readability.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-images fa-2x text-success"></i>
+                            </div>
+                            <h5 class="fw-bold">Image Tips</h5>
+                            <p class="text-muted small">
+                                Use high-quality images and add descriptive alt text for better SEO.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-search fa-2x text-warning"></i>
+                            </div>
+                            <h5 class="fw-bold">SEO Tips</h5>
+                            <p class="text-muted small">
+                                Include keywords in your title, meta description, and use internal links.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for form enhancements -->
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Character and word counter for content
+        const contentField = document.getElementById('id_content');
+        const charCountSpan = document.getElementById('charCount');
+        const wordCountSpan = document.getElementById('wordCount');
+        
+        if (contentField) {
+            contentField.addEventListener('input', function() {
+                const text = this.value;
+                const charCount = text.length;
+                const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+                
+                charCountSpan.textContent = charCount;
+                wordCountSpan.textContent = wordCount;
+                
+                updateProgress();
+            });
+            
+            // Trigger initial count
+            contentField.dispatchEvent(new Event('input'));
+        }
+        
+        // Meta description character counter
+        const metaField = document.getElementById('id_meta_description');
+        const metaCharCountSpan = document.getElementById('metaCharCount');
+        
+        if (metaField && metaCharCountSpan) {
+            metaField.addEventListener('input', function() {
+                const count = this.value.length;
+                metaCharCountSpan.textContent = count;
+                
+                if (count > 160) {
+                    metaCharCountSpan.style.color = 'red';
+                } else {
+                    metaCharCountSpan.style.color = '';
+                }
+            });
+            
+            // Trigger initial count
+            metaField.dispatchEvent(new Event('input'));
+        }
+        
+        // Auto-generate slug from title
+        const titleField = document.getElementById('id_title');
+        const slugField = document.getElementById('id_slug');
+        
+        if (titleField && slugField) {
+            titleField.addEventListener('blur', function() {
+                if (!slugField.value || slugField.value === '') {
+                    const slug = this.value
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                    slugField.value = slug;
+                }
+            });
+        }
+        
+        // Image preview
+        const imageInput = document.getElementById('id_image');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+        
+        if (imageInput) {
+            imageInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Auto-save notification
+        let saveTimeout;
+        const form = document.querySelector('form');
+        const lastSavedSpan = document.getElementById('lastSaved');
+        
+        if (form) {
+            form.addEventListener('input', function() {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(function() {
+                    const now = new Date();
+                    lastSavedSpan.textContent = now.toLocaleTimeString();
+                }, 3000);
+            });
+        }
+        
+        // Preview post (modal simulation)
+        window.previewPost = function() {
+            const title = document.getElementById('id_title').value || 'Untitled';
+            const content = document.getElementById('id_content').value || 'No content yet...';
+            
+            alert(`📝 Preview\n\nTitle: ${title}\n\nContent:\n${content.substring(0, 200)}${content.length > 200 ? '...' : ''}`);
+        };
+        
+        // Remove image
+        window.removeImage = function() {
+            document.getElementById('id_image').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('previewImage').src = '#';
+        };
+        
+        // Progress bar
+        function updateProgress() {
+            const fields = ['id_title', 'id_content', 'id_status'];
+            let filled = 0;
+            
+            fields.forEach(id => {
+                const field = document.getElementById(id);
+                if (field && field.value && field.value.trim() !== '') {
+                    filled++;
+                }
+            });
+            
+            const percentage = Math.round((filled / fields.length) * 100);
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            if (progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = percentage + '%';
+            }
+        }
+    });
+</script>
+
+<style>
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    
+    .form-floating {
+        margin-bottom: 0;
+    }
+    
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+    
+    .form-floating > .form-control:focus,
+    .form-floating > .form-select:focus {
+        border-color: #6C63FF;
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.15);
+    }
+    
+    .form-floating > .form-control.is-invalid,
+    .form-floating > .form-select.is-invalid {
+        border-color: #dc3545;
+    }
+    
+    .form-floating > .form-control-lg {
+        padding: 1.2rem 1rem 0.5rem;
+    }
+    
+    .form-floating > label {
+        padding: 0.8rem 1rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        padding-top: 0.3rem;
+        padding-bottom: 0.1rem;
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .form-text {
+        margin-top: 0.5rem;
+        padding-left: 0.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .form-check-input:checked {
+        background-color: #6C63FF;
+        border-color: #6C63FF;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .btn-outline-secondary {
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f8f9fa;
+        border-color: #6c757d;
+        transform: translateY(-2px);
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #6C63FF;
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.15);
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .card-header {
+            padding: 1.5rem !important;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            font-size: 0.9rem !important;
+            padding: 0.6rem 1.5rem !important;
+        }
+    }
+    
+    /* Custom scrollbar for select multiple */
+    select[multiple] {
+        scrollbar-width: thin;
+        scrollbar-color: #6C63FF #f1f1f1;
+    }
+    
+    select[multiple]::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    select[multiple]::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+    
+    select[multiple]::-webkit-scrollbar-thumb {
+        background: #6C63FF;
+        border-radius: 10px;
+    }
+    
+    select[multiple]::-webkit-scrollbar-thumb:hover {
+        background: #764ba2;
+    }
+</style>
+{% endblock %}
+{% endblock %}
+{% comment %} {%extends "layout.html"%}
+{%block title%}Create AND Edit - Bloggies{%endblock%}
+{%block content%}
+<h1>Welcome To Blog App Form Page</h1>
+{%endblock%} {% endcomment %}

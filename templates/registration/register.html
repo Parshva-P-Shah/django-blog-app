@@ -1,0 +1,485 @@
+{% extends "layout.html" %}
+{% block title %}Register - Bloggies{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center align-items-center min-vh-60">
+        <div class="col-lg-8 col-md-10">
+            <!-- Main Card -->
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left Side - Branding/Image -->
+                    <div class="col-lg-5 d-none d-lg-block" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="h-100 p-5 d-flex flex-column justify-content-center text-white">
+                            <div class="mb-4">
+                                <div class="bg-white bg-opacity-20 rounded-circle p-3 d-inline-block">
+                                    <i class="fas fa-pen-nib fa-3x"></i>
+                                </div>
+                            </div>
+                            <h2 class="display-6 fw-bold mb-3">Join Bloggies</h2>
+                            <p class="lead opacity-75 mb-4">
+                                Start your journey as a writer. Share your stories, connect with readers, and become part of our growing community.
+                            </p>
+                            <div class="mt-auto">
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Write and publish your stories</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3 mb-2">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Connect with fellow writers</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="fas fa-check-circle fa-fw"></i>
+                                    <span>Build your audience</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-top border-white border-opacity-25">
+                                <small class="opacity-75">
+                                    <i class="fas fa-users me-2"></i>
+                                    Join 10,000+ writers already on Bloggies
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side - Signup Form -->
+                    <div class="col-lg-7">
+                        <div class="p-5">
+                            <!-- Header -->
+                            <div class="text-center mb-4">
+                                <h3 class="fw-bold mb-2">Create Account</h3>
+                                <p class="text-muted">Start your blogging journey today</p>
+                            </div>
+
+                            <!-- Social Signup Buttons -->
+                            <div class="d-grid gap-2 mb-4">
+                                <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill" 
+                                        style="border-color: #db4437; color: #db4437;">
+                                    <i class="fab fa-google me-2"></i>
+                                    Continue with Google
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg rounded-pill" 
+                                        style="border-color: #1877f2; color: #1877f2;">
+                                    <i class="fab fa-facebook-f me-2"></i>
+                                    Continue with Facebook
+                                </button>
+                            </div>
+
+                            <!-- Divider -->
+                            <div class="position-relative text-center my-4">
+                                <hr>
+                                <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">
+                                    OR
+                                </span>
+                            </div>
+
+                            <!-- Signup Form -->
+                            <form method="post" novalidate>
+                                {% csrf_token %}
+                                
+                                <div class="row g-3">
+                                    <!-- Username -->
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control form-control-lg {% if form.username.errors %}is-invalid{% endif %}" 
+                                                   id="id_username" 
+                                                   name="username" 
+                                                   placeholder="Choose a username"
+                                                   value="{{ form.username.value|default:'' }}"
+                                                   required>
+                                            <label for="id_username">
+                                                <i class="fas fa-user text-primary me-2"></i>Username
+                                            </label>
+                                            {% if form.username.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.username.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="form-text">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Username must be unique and at least 3 characters long
+                                        </div>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input type="email" 
+                                                   class="form-control form-control-lg {% if form.email.errors %}is-invalid{% endif %}" 
+                                                   id="id_email" 
+                                                   name="email" 
+                                                   placeholder="Enter your email address"
+                                                   value="{{ form.email.value|default:'' }}"
+                                                   required>
+                                            <label for="id_email">
+                                                <i class="fas fa-envelope text-primary me-2"></i>Email Address
+                                            </label>
+                                            {% if form.email.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.email.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Password -->
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-floating">
+                                            <input type="password" 
+                                                   class="form-control form-control-lg {% if form.password1.errors %}is-invalid{% endif %}" 
+                                                   id="id_password1" 
+                                                   name="password1" 
+                                                   placeholder="Create a password"
+                                                   required>
+                                            <label for="id_password1">
+                                                <i class="fas fa-lock text-primary me-2"></i>Password
+                                            </label>
+                                            {% if form.password1.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.password1.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Confirm Password -->
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-floating">
+                                            <input type="password" 
+                                                   class="form-control form-control-lg {% if form.password2.errors %}is-invalid{% endif %}" 
+                                                   id="id_password2" 
+                                                   name="password2" 
+                                                   placeholder="Confirm your password"
+                                                   required>
+                                            <label for="id_password2">
+                                                <i class="fas fa-check-circle text-primary me-2"></i>Confirm Password
+                                            </label>
+                                            {% if form.password2.errors %}
+                                            <div class="invalid-feedback">
+                                                {% for error in form.password2.errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Password Strength Meter -->
+                                    <div class="col-12">
+                                        <div class="password-strength" id="passwordStrength">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <small class="text-muted">Password Strength</small>
+                                                <small class="text-muted" id="strengthText">Enter a password</small>
+                                            </div>
+                                            <div class="progress" style="height: 4px;">
+                                                <div class="progress-bar" id="strengthBar" 
+                                                     style="width: 0%; background: #dc3545; transition: all 0.3s ease;">
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <small class="text-muted password-requirements">
+                                                    <i class="fas fa-circle text-danger" id="reqLength"></i> Min 8 characters
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-circle text-danger" id="reqUpper"></i> Uppercase
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-circle text-danger" id="reqLower"></i> Lowercase
+                                                    <span class="mx-2">|</span>
+                                                    <i class="fas fa-circle text-danger" id="reqNumber"></i> Number
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Terms and Conditions -->
+                                    <div class="col-12 mt-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="id_terms" required>
+                                            <label class="form-check-label" for="id_terms">
+                                                I agree to the 
+                                                <a href="#" class="text-decoration-none">Terms of Service</a> 
+                                                and 
+                                                <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg rounded-pill">
+                                        <i class="fas fa-user-plus me-2"></i>
+                                        Create Account
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- Login Link -->
+                            <div class="text-center mt-4">
+                                <p class="text-muted">
+                                    Already have an account? 
+                                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold text-primary">
+                                        Sign In
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row g-4 mt-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-pencil-alt fa-2x text-primary"></i>
+                            </div>
+                            <h6 class="fw-bold">Write Freely</h6>
+                            <p class="text-muted small mb-0">
+                                Express yourself through beautiful blog posts
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-users fa-2x text-success"></i>
+                            </div>
+                            <h6 class="fw-bold">Connect</h6>
+                            <p class="text-muted small mb-0">
+                                Join a community of passionate writers
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 hover-card">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                                <i class="fas fa-rocket fa-2x text-warning"></i>
+                            </div>
+                            <h6 class="fw-bold">Grow</h6>
+                            <p class="text-muted small mb-0">
+                                Build your audience and gain recognition
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Password Strength -->
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const password1 = document.getElementById('id_password1');
+        const password2 = document.getElementById('id_password2');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+        const reqLength = document.getElementById('reqLength');
+        const reqUpper = document.getElementById('reqUpper');
+        const reqLower = document.getElementById('reqLower');
+        const reqNumber = document.getElementById('reqNumber');
+
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let requirements = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /[0-9]/.test(password)
+            };
+
+            // Update requirement indicators
+            reqLength.className = `fas fa-circle ${requirements.length ? 'text-success' : 'text-danger'}`;
+            reqUpper.className = `fas fa-circle ${requirements.upper ? 'text-success' : 'text-danger'}`;
+            reqLower.className = `fas fa-circle ${requirements.lower ? 'text-success' : 'text-danger'}`;
+            reqNumber.className = `fas fa-circle ${requirements.number ? 'text-success' : 'text-danger'}`;
+
+            // Calculate strength
+            if (requirements.length) strength++;
+            if (requirements.upper) strength++;
+            if (requirements.lower) strength++;
+            if (requirements.number) strength++;
+
+            // Update UI
+            const percentages = {
+                0: { width: '0%', color: '#dc3545', text: 'Weak' },
+                1: { width: '25%', color: '#dc3545', text: 'Weak' },
+                2: { width: '50%', color: '#ffc107', text: 'Fair' },
+                3: { width: '75%', color: '#17a2b8', text: 'Good' },
+                4: { width: '100%', color: '#28a745', text: 'Strong' }
+            };
+
+            const result = percentages[strength] || percentages[0];
+            strengthBar.style.width = result.width;
+            strengthBar.style.background = result.color;
+            strengthText.textContent = password ? result.text : 'Enter a password';
+            strengthText.style.color = result.color;
+
+            return requirements;
+        }
+
+        if (password1) {
+            password1.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+                
+                // Also check if passwords match
+                if (password2 && password2.value) {
+                    checkPasswordMatch();
+                }
+            });
+        }
+
+        function checkPasswordMatch() {
+            if (password1 && password2) {
+                const match = password1.value === password2.value && password1.value !== '';
+                if (password2.value) {
+                    password2.classList.toggle('is-valid', match);
+                    password2.classList.toggle('is-invalid', !match);
+                }
+            }
+        }
+
+        if (password2) {
+            password2.addEventListener('input', checkPasswordMatch);
+        }
+
+        // Show/hide password toggle (optional)
+        // Add password visibility toggle with a button
+    });
+</script>
+
+<style>
+    .min-vh-60 {
+        min-height: 60vh;
+    }
+    
+    .hover-card {
+        transition: all 0.3s ease;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    }
+    
+    .form-floating {
+        margin-bottom: 0;
+    }
+    
+    .form-floating > .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: white;
+    }
+    
+    .form-floating > .form-control:focus {
+        border-color: #6C63FF;
+        box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.15);
+    }
+    
+    .form-floating > .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+    
+    .form-floating > .form-control.is-valid {
+        border-color: #28a745;
+    }
+    
+    .form-floating > .form-control-lg {
+        padding: 1.2rem 1rem 0.5rem;
+    }
+    
+    .form-floating > label {
+        padding: 0.8rem 1rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        padding-top: 0.3rem;
+        padding-bottom: 0.1rem;
+        font-size: 0.8rem;
+        opacity: 0.8;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .form-check-input:checked {
+        background-color: #6C63FF;
+        border-color: #6C63FF;
+    }
+    
+    .password-requirements {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .password-requirements .fa-circle {
+        font-size: 8px;
+        vertical-align: middle;
+    }
+    
+    .bg-opacity-20 {
+        background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+    
+    @media (max-width: 768px) {
+        .p-5 {
+            padding: 1.5rem !important;
+        }
+        
+        .display-6 {
+            font-size: 1.5rem !important;
+        }
+        
+        .btn-lg {
+            font-size: 0.9rem !important;
+            padding: 0.6rem 1.5rem !important;
+        }
+        
+        .password-requirements {
+            font-size: 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}
+{% comment %} {%extends "layout.html"%}
+{%block title%}Signup - Bloggies{%endblock%}
+{%block content%}
+<h1>Welcome To Blog App Signup Page</h1>
+{%endblock%} {% endcomment %}

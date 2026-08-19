@@ -1,0 +1,615 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ profile_user.username }} - Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="row g-4">
+
+        <!-- ================= PROFILE SIDEBAR ================= -->
+        <div class="col-lg-4 col-md-5">
+
+            <div class="card profile-card border-0 shadow-sm">
+
+                <!-- Cover -->
+                <div class="profile-cover">
+                    <div class="profile-avatar-wrapper">
+
+                        <div class="profile-avatar">
+                            <img
+                                src="https://ui-avatars.com/api/?name={{ profile_user.username }}&background=667eea&color=fff&size=160&bold=true"
+                                alt="{{ profile_user.username }}"
+                            >
+                        </div>
+
+                        <span class="online-dot"></span>
+
+                    </div>
+                </div>
+
+                <!-- Profile information -->
+                <div class="card-body text-center profile-body">
+
+                    <h3 class="fw-bold mb-1">
+                        {% if profile_user.get_full_name %}
+                            {{ profile_user.get_full_name }}
+                        {% else %}
+                            {{ profile_user.username }}
+                        {% endif %}
+                    </h3>
+
+                    <p class="text-muted mb-3">
+                        @{{ profile_user.username }}
+                    </p>
+
+                    <p class="profile-bio">
+                        Blogger & Content Creator
+                    </p>
+
+                    <!-- Statistics -->
+                    <div class="row g-2 mb-4">
+
+                        <div class="col-4">
+                            <div class="profile-stat">
+                                <h5>{{ profile_blog|length }}</h5>
+                                <small>Posts</small>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="profile-stat">
+                                <h5>0</h5>
+                                <small>Followers</small>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="profile-stat">
+                                <h5>0</h5>
+                                <small>Following</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Social icons -->
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+
+                        <button class="social-btn">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+
+                        <button class="social-btn">
+                            <i class="fab fa-github"></i>
+                        </button>
+
+                        <button class="social-btn">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    {% if request.user == profile_user %}
+
+                        <div class="d-grid gap-2">
+
+                            <a
+                                href="{% url 'blog_create' %}"
+                                class="btn btn-primary rounded-pill"
+                            >
+                                <i class="fas fa-plus me-2"></i>
+                                Create New Post
+                            </a>
+
+                        </div>
+
+                    {% endif %}
+
+                    <!-- Member since -->
+                    <div class="border-top mt-4 pt-3">
+
+                        <small class="text-muted">
+                            <i class="far fa-calendar-alt me-1"></i>
+
+                            Member since
+                            {{ profile_user.date_joined|date:"F Y" }}
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= POSTS SECTION ================= -->
+
+        <div class="col-lg-8 col-md-7">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div>
+                    <h4 class="fw-bold mb-1">
+                        {{ profile_user.username }}'s Posts
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        {{ profile_blog|length }} blog post{{ profile_blog|length|pluralize }}
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Posts -->
+
+            <div class="row g-4">
+
+                {% for blog in profile_blog %}
+
+                    <div class="col-md-6">
+
+                        <div class="blog-card h-100">
+
+                            <!-- Image -->
+
+                            {% if blog.image %}
+
+                                <div class="blog-image-wrapper">
+
+                                    <img
+                                        src="{{ blog.image.url }}"
+                                        alt="{{ blog.title }}"
+                                        class="blog-image"
+                                    >
+
+                                    <span class="blog-status">
+
+                                        {% if blog.status == 'public' %}
+                                            <i class="fas fa-globe me-1"></i>
+                                            Public
+                                        {% else %}
+                                            <i class="fas fa-lock me-1"></i>
+                                            Private
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+                            {% else %}
+
+                                <div class="blog-image-placeholder">
+
+                                    <i class="fas fa-blog"></i>
+
+                                    <span class="blog-status">
+
+                                        {% if blog.status == 'public' %}
+                                            Public
+                                        {% else %}
+                                            Private
+                                        {% endif %}
+
+                                    </span>
+
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- Content -->
+
+                            <div class="p-4">
+
+                                <div class="mb-2">
+
+                                    {% if blog.status == 'public' %}
+
+                                        <span class="badge bg-success-subtle text-success">
+                                            Public
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary-subtle text-secondary">
+                                            Private
+                                        </span>
+
+                                    {% endif %}
+
+                                </div>
+
+
+                                <h5 class="fw-bold blog-title">
+
+                                    <a
+                                        href="{% url 'blog_page' blog.id %}"
+                                        class="text-decoration-none"
+                                    >
+                                        {{ blog.title }}
+                                    </a>
+
+                                </h5>
+
+
+                                <p class="text-muted blog-content">
+
+                                    {{ blog.content|truncatewords:25 }}
+
+                                </p>
+
+
+                                <!-- Footer -->
+
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+
+                                    <small class="text-muted">
+
+                                        <i class="far fa-calendar-alt me-1"></i>
+
+                                        {{ blog.created_at }}
+
+                                    </small>
+
+
+                                    <a
+                                        href="{% url 'blog_page' blog.id %}"
+                                        class="read-more"
+                                    >
+                                        Read More
+                                        <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+
+                                </div>
+
+
+                                <!-- Owner buttons -->
+
+                                {% if request.user == profile_user %}
+
+                                    <div class="border-top mt-3 pt-3 d-flex gap-2">
+
+                                        <a
+                                            href="{% url 'blog_edit' blog.id %}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill flex-fill"
+                                        >
+                                            <i class="fas fa-edit me-1"></i>
+                                            Edit
+                                        </a>
+
+                                        <a
+                                            href="{% url 'blog_delete' blog.id %}"
+                                            class="btn btn-sm btn-outline-danger rounded-pill flex-fill"
+                                        >
+                                            <i class="fas fa-trash me-1"></i>
+                                            Delete
+                                        </a>
+
+                                    </div>
+
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                {% empty %}
+
+                    <!-- No posts -->
+
+                    <div class="col-12">
+
+                        <div class="empty-posts">
+
+                            <div class="empty-icon">
+                                <i class="fas fa-blog"></i>
+                            </div>
+
+                            <h4 class="fw-bold">
+                                No Posts Yet
+                            </h4>
+
+                            <p class="text-muted">
+                                {{ profile_user.username }} hasn't published any posts yet.
+                            </p>
+
+                            {% if request.user == profile_user %}
+
+                                <a
+                                    href="{% url 'blog_create' %}"
+                                    class="btn btn-primary rounded-pill px-4"
+                                >
+                                    <i class="fas fa-plus me-2"></i>
+                                    Create Your First Post
+                                </a>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= CSS ================= -->
+
+<style>
+
+    /* Profile Card */
+
+    .profile-card {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .profile-cover {
+        height: 130px;
+        background: linear-gradient(
+            135deg,
+            #667eea,
+            #764ba2
+        );
+        position: relative;
+    }
+
+    .profile-avatar-wrapper {
+        position: absolute;
+        left: 50%;
+        bottom: -65px;
+        transform: translateX(-50%);
+    }
+
+    .profile-avatar {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        padding: 5px;
+        background: white;
+        box-shadow: 0 8px 25px rgba(0,0,0,.15);
+    }
+
+    .profile-avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .online-dot {
+        position: absolute;
+        right: 7px;
+        bottom: 7px;
+        width: 20px;
+        height: 20px;
+        background: #20c997;
+        border: 3px solid white;
+        border-radius: 50%;
+    }
+
+    .profile-body {
+        padding-top: 80px;
+    }
+
+    .profile-bio {
+        color: #6c757d;
+        font-size: .95rem;
+        margin-bottom: 25px;
+    }
+
+
+    /* Statistics */
+
+    .profile-stat {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 12px 5px;
+    }
+
+    .profile-stat h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .profile-stat small {
+        color: #6c757d;
+    }
+
+
+    /* Social buttons */
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+        background: white;
+        color: #667eea;
+        transition: .25s;
+    }
+
+    .social-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-3px);
+    }
+
+
+    /* Blog Card */
+
+    .blog-card {
+        height: 100%;
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,.07);
+        transition: .3s ease;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(0,0,0,.12);
+    }
+
+
+    /* Blog image */
+
+    .blog-image-wrapper,
+    .blog-image-placeholder {
+        height: 210px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blog-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .4s ease;
+    }
+
+    .blog-card:hover .blog-image {
+        transform: scale(1.05);
+    }
+
+    .blog-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+            135deg,
+            #667eea,
+            #764ba2
+        );
+        color: white;
+        font-size: 50px;
+    }
+
+
+    /* Status */
+
+    .blog-status {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,.95);
+        color: #343a40;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+
+    /* Blog content */
+
+    .blog-title {
+        min-height: 48px;
+        line-height: 1.35;
+    }
+
+    .blog-title a {
+        color: #212529;
+    }
+
+    .blog-title a:hover {
+        color: #667eea;
+    }
+
+    .blog-content {
+        min-height: 60px;
+        line-height: 1.6;
+    }
+
+
+    /* Read more */
+
+    .read-more {
+        text-decoration: none;
+        color: #667eea;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .read-more:hover {
+        color: #764ba2;
+    }
+
+
+    /* Empty posts */
+
+    .empty-posts {
+        text-align: center;
+        padding: 70px 30px;
+        background: #f8f9fa;
+        border-radius: 20px;
+        border: 2px dashed #dee2e6;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #667eea;
+        font-size: 30px;
+    }
+
+
+    /* Mobile */
+
+    @media (max-width: 768px) {
+
+        .profile-cover {
+            height: 110px;
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+        }
+
+        .profile-avatar-wrapper {
+            bottom: -55px;
+        }
+
+        .profile-body {
+            padding-top: 70px;
+        }
+
+        .blog-image-wrapper,
+        .blog-image-placeholder {
+            height: 200px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}
