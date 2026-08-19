@@ -1,0 +1,42 @@
+# Make sure .gitignore has these exact lines
+cat > .gitignore << 'EOF'
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Database
+db.sqlite3
+*.sqlite3
+*.db
+
+# Media Files
+media/
+media/*
+!media/.gitkeep
+
+# Django
+*.log
+*.pot
+staticfiles/
+local_settings.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS
+Thumbs.db
+Desktop.ini
+EOF
